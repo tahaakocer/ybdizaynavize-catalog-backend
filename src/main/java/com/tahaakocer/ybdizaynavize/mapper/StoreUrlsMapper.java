@@ -1,6 +1,7 @@
 package com.tahaakocer.ybdizaynavize.mapper;
 
 import com.tahaakocer.ybdizaynavize.dto.StoreUrlsDto;
+import com.tahaakocer.ybdizaynavize.dto.request.StoreUrlsRequest;
 import com.tahaakocer.ybdizaynavize.dto.response.StoreUrlsResponse;
 import com.tahaakocer.ybdizaynavize.model.StoreUrls;
 import org.mapstruct.Mapper;
@@ -19,4 +20,6 @@ public interface StoreUrlsMapper
     StoreUrlsResponse dtoToResponse(StoreUrlsDto storeUrlsDto);
 
     List<StoreUrlsResponse> dtoListToResponseList(List<StoreUrlsDto> all);
+
+    StoreUrlsDto requestToDto(StoreUrlsRequest storeUrlsRequest);
 }

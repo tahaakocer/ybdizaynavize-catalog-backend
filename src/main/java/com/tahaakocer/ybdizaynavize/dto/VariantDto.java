@@ -16,21 +16,28 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class VariantDto {
     private Long id;
     private Long productId;
+
     @JsonIgnore
     private ProductVariantDto product;
+
     private List<AttributeValueDto> attributeValues;
     private List<Long> attributeValueIds;
+
     private String sku;
     private Double price;
     private Double discountedPrice;
     private Integer stock;
-    private MultipartFile [] photoFiles;
+
+    // Fotoğrafların çoklu dosya yüklemeleri için
+    private MultipartFile[] photoFiles;
     private List<ImageDto> images;
+
+    // Store URL'ler ve mağazalar için DTO listesi
     private List<StoreUrlsDto> storeUrls;
+
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 }

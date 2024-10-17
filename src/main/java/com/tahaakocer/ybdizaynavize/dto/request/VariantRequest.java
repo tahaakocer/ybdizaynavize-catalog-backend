@@ -2,6 +2,7 @@ package com.tahaakocer.ybdizaynavize.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tahaakocer.ybdizaynavize.dto.StoreUrlsDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class VariantRequest {
     private Long productId;
     private List<Long> attributeValueIds;
@@ -23,4 +23,7 @@ public class VariantRequest {
     private Double discountedPrice;
     private Integer stock;
     private MultipartFile[] photoFiles;
+
+    // Store URL bilgileri için DTO listesi (ID ve URL)
+    private List<StoreUrlsRequest> storeUrls;
 }

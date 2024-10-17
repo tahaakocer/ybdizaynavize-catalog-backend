@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses =  {StoreUrlsMapper.class})
 public interface VariantMapper {
      Variant dtoToEntity(VariantDto variantDto);
 
