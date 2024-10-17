@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: ybdizaynavize
+  config:
+    import: optional:file:.env[.properties]
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  cache:
+    type: redis
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+aws:
+  s3:
+    access:
+      key: ${AWS_ACCESS_KEY}
+    secret:
+      key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
+    bucket:
+      name: ${AWS_S3_BUCKET_NAME}
+
+logging:
+  file:
+    path: logs/
+    name: ybdizaynavize.log
+
