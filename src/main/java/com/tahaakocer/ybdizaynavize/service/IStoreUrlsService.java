@@ -13,4 +13,6 @@ public interface IStoreUrlsService {
     StoreUrlsDto get(Long id);
 
     List<StoreUrlsDto> getAll();
+
+    StoreUrlsDto update(Long id, String url);
 }

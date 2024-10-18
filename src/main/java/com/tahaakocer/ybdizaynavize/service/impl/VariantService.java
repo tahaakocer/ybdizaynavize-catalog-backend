@@ -1,9 +1,6 @@
 package com.tahaakocer.ybdizaynavize.service.impl;
 
-import com.tahaakocer.ybdizaynavize.dto.AttributeValueDto;
-import com.tahaakocer.ybdizaynavize.dto.ProductDto;
-import com.tahaakocer.ybdizaynavize.dto.StoreDto;
-import com.tahaakocer.ybdizaynavize.dto.VariantDto;
+import com.tahaakocer.ybdizaynavize.dto.*;
 import com.tahaakocer.ybdizaynavize.exception.EntityNotFoundException;
 import com.tahaakocer.ybdizaynavize.mapper.AttributeValueMapper;
 import com.tahaakocer.ybdizaynavize.mapper.ProductMapper;
@@ -36,6 +33,7 @@ public class VariantService implements IVariantService {
     private final AttributeValueMapper attributeValueMapper;
     private final IStoreService storeService; // IStoreService
     private final StoreMapper storeMapper;
+    private final IStoreUrlsService storeUrlsService;
 
     public VariantService(VariantRepository variantRepository,
                           VariantMapper variantMapper,
@@ -43,7 +41,7 @@ public class VariantService implements IVariantService {
                           IProductService productService,
                           ProductMapper productMapper,
                           IAttributeValueService attributeValueService,
-                          AttributeValueMapper attributeValueMapper, IStoreService storeService, StoreMapper storeMapper) {
+                          AttributeValueMapper attributeValueMapper, IStoreService storeService, StoreMapper storeMapper, IStoreUrlsService storeUrlsService) {
         this.variantRepository = variantRepository;
         this.variantMapper = variantMapper;
         this.awsS3Service = awsS3Service;
@@ -53,6 +51,7 @@ public class VariantService implements IVariantService {
         this.attributeValueMapper = attributeValueMapper;
         this.storeService = storeService;
         this.storeMapper = storeMapper;
+        this.storeUrlsService = storeUrlsService;
     }
 
     private Pageable createPageable(int page, int size, String sortBy, String sortDirection) {
@@ -147,28 +146,51 @@ public class VariantService implements IVariantService {
     @Override
     @Transactional
     public VariantDto update(Long id, VariantDto variantDto) {
+        // Variant'ı bul
         Variant variant = this.variantRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Variant not found with id: " + id)
         );
+
+        // Fiyat, stok vb. güncelleme işlemleri
         variant.setPrice(variantDto.getPrice());
         variant.setDiscountedPrice(variantDto.getDiscountedPrice());
         variant.setStock(variantDto.getStock());
+
+        // AttributeValue'leri güncelleme
         List<AttributeValueDto> attributeValueDtoList = new ArrayList<>();
         variantDto.getAttributeValueIds().forEach(attributeValueId -> {
             AttributeValueDto attributeValue = this.attributeValueService.getById(attributeValueId);
-            attributeValue.setId(attributeValueId);
             attributeValueDtoList.add(attributeValue);
-
         });
         List<AttributeValue> updatedAttributeValues = attributeValueDtoList.stream()
                 .map(this.attributeValueMapper::dtoToEntity)
                 .toList();
         variant.setAttributeValues(new ArrayList<>(updatedAttributeValues));
-        //TODO fotoğraf güncelleme eklenebilir
+
+//        TODO Image'leri güncelleme
+//        TODO veritabanında birikme oluyor
+        // Store URLs'i güncelleme
+        if (variantDto.getStoreUrls() != null && !variantDto.getStoreUrls().isEmpty()) {
+            List<StoreUrls> storeUrlsEntities = variantDto.getStoreUrls().stream()
+                    .map(storeUrlDTO -> {
+                        StoreDto storeDto = this.storeService.get(storeUrlDTO.getStoreId());
+                        StoreUrls storeUrl = new StoreUrls();
+                        storeUrl.setStore(this.storeMapper.dtoToEntity(storeDto));
+                        storeUrl.setUrl(storeUrlDTO.getUrl());
+                        return storeUrl;
+                    }).toList();
+            variant.setStoreUrls(new ArrayList<>(storeUrlsEntities)); // Eğer immutable bir set ya da liste kullanıyorsanız bunu deneyin.
+
+            log.info("storeUrlsEntities updated: " + storeUrlsEntities);
+        }
+
+        // Variant'ı kaydetme
         Variant saved = this.variantRepository.save(variant);
-        log.info("variant: " + variant);
+        log.info("variant updated: " + variant);
+
         return this.variantMapper.entityToDto(saved);
     }
+
 
     @Override
     public List<VariantDto> getByProductId(Long id) {

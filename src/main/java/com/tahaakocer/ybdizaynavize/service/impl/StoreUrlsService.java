@@ -69,4 +69,16 @@ public class StoreUrlsService implements IStoreUrlsService {
         List<StoreUrls> attributeValues = this.storeUrlsRepository.findAll();
         log.info("store urls found: {}", attributeValues);
         return this.storeUrlsMapper.entityListToDtoList(attributeValues);    }
+
+    @Override
+    public StoreUrlsDto update(Long id, String url) {
+
+        StoreUrls storeUrls = this.storeUrlsRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Store Url not found with id: " + id)
+        );
+        storeUrls.setUrl(url);
+        StoreUrls saved = this.storeUrlsRepository.save(storeUrls);
+        log.info("store url updated: {}", saved);
+        return this.storeUrlsMapper.entityToDto(saved);
+    }
 }
