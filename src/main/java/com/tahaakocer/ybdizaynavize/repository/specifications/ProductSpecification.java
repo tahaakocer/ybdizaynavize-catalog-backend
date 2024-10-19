@@ -1,7 +1,7 @@
 package com.tahaakocer.ybdizaynavize.repository.specifications;
 
-import com.tahaakocer.ybdizaynavize.model.AttributeValue;
-import com.tahaakocer.ybdizaynavize.model.Product;
+import com.tahaakocer.ybdizaynavize.model.product.AttributeValue;
+import com.tahaakocer.ybdizaynavize.model.product.Product;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;

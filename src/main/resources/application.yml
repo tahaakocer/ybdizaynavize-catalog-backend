@@ -32,4 +32,6 @@ logging:
   file:
     path: logs/
     name: ybdizaynavize.log
+jwt:
+  key: ${JWT_KEY}
 

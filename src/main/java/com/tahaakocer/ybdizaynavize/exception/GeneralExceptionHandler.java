@@ -1,6 +1,8 @@
 package com.tahaakocer.ybdizaynavize.exception;
 
 
+import com.tahaakocer.ybdizaynavize.exception.product.S3DeleteImageException;
+import com.tahaakocer.ybdizaynavize.exception.product.S3UploadImageException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;

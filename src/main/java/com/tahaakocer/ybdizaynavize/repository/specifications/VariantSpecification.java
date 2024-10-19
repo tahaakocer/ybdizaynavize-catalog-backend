@@ -1,6 +1,6 @@
 package com.tahaakocer.ybdizaynavize.repository.specifications;
 
-import com.tahaakocer.ybdizaynavize.model.Variant;
+import com.tahaakocer.ybdizaynavize.model.product.Variant;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
