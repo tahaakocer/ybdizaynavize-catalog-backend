@@ -15,12 +15,12 @@ public class TokenService {
 
     public void saveAccessToken(String email, String accessToken) {
         redisTemplate.opsForHash().put(email, "accessToken", accessToken);
-        redisTemplate.expire(email, Duration.ofMinutes(15));  // Access token süresi 60 dakika
+        redisTemplate.expire(email, Duration.ofDays(1));  // Access token süresi 1 gün
     }
 
     public void saveRefreshToken(String email, String refreshToken) {
         redisTemplate.opsForHash().put(email, "refreshToken", refreshToken);
-        redisTemplate.expire(email, Duration.ofDays(1));  // Refresh token süresi 24 saat
+        redisTemplate.expire(email, Duration.ofDays(3));  // Refresh token süresi 3 gün
     }
 
     public String getAccessTokenByEmail(String email) {

@@ -3,6 +3,11 @@ package com.tahaakocer.ybdizaynavize.exception;
 
 import com.tahaakocer.ybdizaynavize.exception.product.S3DeleteImageException;
 import com.tahaakocer.ybdizaynavize.exception.product.S3UploadImageException;
+import com.tahaakocer.ybdizaynavize.exception.user.EmailAlreadyExistsException;
+import com.tahaakocer.ybdizaynavize.exception.user.TokenInvalidException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
@@ -22,17 +27,18 @@ import java.util.Map;
 public class GeneralExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex,HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now().toString())
                 .status(HttpStatus.NOT_FOUND.value())
-                .error("Not Found Error")
+                .error("Not Found")
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
-        log.error(ex.getMessage());
+        log.error("Entity not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
+
     @ExceptionHandler(S3UploadImageException.class)
     public ResponseEntity<ErrorResponse> handleS3UploadImageException(S3UploadImageException ex,HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
@@ -119,5 +125,18 @@ public class GeneralExceptionHandler {
 
         log.error("Data integrity violation: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+    //========================JWT EXCEPTIONS========================
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<ErrorResponse> handleTokenInvalidException(TokenInvalidException ex, HttpServletRequest request) {
+        log.error("Invalid JWT token: {}", ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Invalid JWT token")
+                .message(ex.getMessage())  // Exception mesajı fırlatılıyor
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

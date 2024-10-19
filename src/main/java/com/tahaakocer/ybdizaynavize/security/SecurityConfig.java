@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTAuthFilter jwtAuthFilter;
+
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWTAuthFilter jwtAuthFilter) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtAuthFilter = jwtAuthFilter;
@@ -35,16 +36,21 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request ->
                         request
-                                .requestMatchers("/v1/auth/**").permitAll()
-                                .requestMatchers("/v1/users/get-all").hasRole("USER")
-                                .requestMatchers("/v1/users/delete/**").hasRole("ADMIN")
-                                .requestMatchers("/v1/users/**").hasAnyRole("USER", "ADMIN")
-                                .anyRequest().authenticated()
+                                // Sadece adminler create ve delete işlemlerini yapabilir
+                                .requestMatchers("/api/v1/attributes/create", "/api/v1/attributes/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/attribute-values/create", "/api/v1/attribute-values/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/brands/create", "/api/v1/brands/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/categories/create", "/api/v1/categories/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/products/create", "/api/v1/products/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/stores/create", "/api/v1/stores/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/store-urls/create", "/api/v1/store-urls/delete").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/variants/create", "/api/v1/variants/delete").hasRole("ADMIN")
+                                // Diğer tüm istekler serbest
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return httpSecurity.build();
     }
 
@@ -65,5 +71,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }

@@ -16,8 +16,8 @@ import java.util.Date;
 public class JwtService {
     @Value("${jwt.key}")
     private String SECRET;
-    private static final long EXPIRATION_REFRESH_TIME = 1000 * 60 * 60 * 24; //for 1 day
-    private static final long EXPIRATION_ACCESS_TIME = 1000 * 60 * 15; //for 15 minutes
+    private static final long EXPIRATION_REFRESH_TIME = 1000 * 60 * 60 * 24 * 3; //for 1 day
+    private static final long EXPIRATION_ACCESS_TIME = 1000 * 60 * 60 * 24; //for 15 minutes
     private final TokenService tokenService;
 
     public JwtService(TokenService tokenService) {
@@ -55,15 +55,17 @@ public class JwtService {
             return true;
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token: {}", e.getMessage());
+            throw new TokenInvalidException("Invalid JWT token"); // Burada TokenInvalidException fırlatıyoruz
         } catch (ExpiredJwtException e) {
             log.error("JWT token is expired: {}", e.getMessage());
+            throw new TokenInvalidException("Expired JWT token"); // Expired durumunda da fırlatıyoruz
         } catch (UnsupportedJwtException e) {
             log.error("JWT token is unsupported: {}", e.getMessage());
+            throw new TokenInvalidException("Unsupported JWT token"); // Unsupported durumunda fırlatıyoruz
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
+            throw new TokenInvalidException("JWT claims string is empty"); // Boş JWT claims fırlatıyoruz
         }
-
-        return false;
     }
 
     private Date extractExpiration(String token) {

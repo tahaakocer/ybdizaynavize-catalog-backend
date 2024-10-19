@@ -3,8 +3,8 @@ package com.tahaakocer.ybdizaynavize.service.user.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tahaakocer.ybdizaynavize.dto.user.UserDto;
 import com.tahaakocer.ybdizaynavize.dto.user.response.LoginResponse;
+import com.tahaakocer.ybdizaynavize.exception.EntityNotFoundException;
 import com.tahaakocer.ybdizaynavize.exception.user.EmailAlreadyExistsException;
-import com.tahaakocer.ybdizaynavize.exception.user.UserNotFoundException;
 import com.tahaakocer.ybdizaynavize.mapper.user.UserMapper;
 import com.tahaakocer.ybdizaynavize.model.user.Role;
 import com.tahaakocer.ybdizaynavize.model.user.User;
@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,16 +66,21 @@ public class UserService implements IUserService {
     @Override
     public LoginResponse login(UserDto userDto) {
         LoginResponse response = new LoginResponse();
-        try{
-            User user = this.userRepository.findByEmail(userDto.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            User user = this.userRepository.findByEmail(userDto.getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userDto.getEmail()));
+
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     userDto.getEmail(), userDto.getPassword()
             ));
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtService.generateToken(authentication.getName());
             String refreshToken = jwtService.generateRefreshToken(authentication.getName());
             this.tokenService.saveAccessToken(user.getEmail(), jwt);
             this.tokenService.saveRefreshToken(user.getEmail(), refreshToken);
+            user.setLastLoginDate(LocalDateTime.now());
+
             response.setStatusCode(200);
             response.setToken(jwt);
             response.setId(user.getId());
@@ -82,16 +88,6 @@ public class UserService implements IUserService {
             response.setAuthorities(user.getAuthorities());
             response.setExpirationTime("24 Hours");
             response.setMessage("Login successful");
-        }
-        catch(UserNotFoundException e){
-            response.setStatusCode(400);
-            response.setMessage(e.getMessage());
-            return response;
-        } catch(Exception e) {
-            response.setStatusCode(500);
-            response.setMessage("Internal server error: " + e.getMessage());
-            return response;
-        }
         return response;
     }
     public boolean validate(String token) {
@@ -108,7 +104,7 @@ public class UserService implements IUserService {
         refreshToken = authHeader.substring(7);
         email = this.jwtService.extractUsername(refreshToken);
         if(email != null){
-            var user = this.userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+            var user = this.userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
             //hem token içindeki expirationtime kontrol ediliyor hemde cache'te ki süresi.
             if(this.jwtService.validateToken(refreshToken) && this.tokenService.isRefreshTokenValid(email, refreshToken)) {
