@@ -31,12 +31,12 @@ public class User implements UserDetails {
     @NotBlank(message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Phone number is required")
-    private String phoneNumber;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    //  @JsonManagedReference
-    private List<Address> addressEntities;
+//    @NotBlank(message = "Phone number is required")
+//    private String phoneNumber;
+//
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    //  @JsonManagedReference
+//    private List<Address> addressEntities;
 
     // @CreationTimestamp ve @UpdateTimestamp ile tarihleri otomatik oluşturuyoruz
     @CreationTimestamp
