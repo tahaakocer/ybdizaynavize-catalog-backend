@@ -21,6 +21,7 @@ public class VariantRequest {
     private Double price;
     private Double discountedPrice;
     private Integer stock;
+    private String sku;
     private MultipartFile[] photoFiles;
 
     // Store URL bilgileri için DTO listesi (ID ve URL)

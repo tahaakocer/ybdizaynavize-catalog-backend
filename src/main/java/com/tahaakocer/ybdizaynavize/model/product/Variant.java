@@ -58,9 +58,9 @@ public class Variant {
     @PrePersist
     protected void onCreate() {
         this.createdDate = LocalDateTime.now();
-        if (this.sku == null || this.sku.isEmpty()) {
-            this.sku = generateSku();
-        }
+//        if (this.sku == null || this.sku.isEmpty()) {
+//            this.sku = generateSku();
+//        }
     }
 
     @PreUpdate

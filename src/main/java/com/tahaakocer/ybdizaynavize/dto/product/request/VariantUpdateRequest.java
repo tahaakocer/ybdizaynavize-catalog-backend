@@ -18,6 +18,7 @@ public class VariantUpdateRequest {
     private Double price;
     private Double discountedPrice;
     private Integer stock;
+    private String sku;
 
     // Store URL bilgileri için DTO listesi (ID ve URL)
     private List<StoreUrlsRequest> storeUrls;

@@ -161,6 +161,7 @@ public class VariantService implements IVariantService {
         variant.setPrice(variantDto.getPrice());
         variant.setDiscountedPrice(variantDto.getDiscountedPrice());
         variant.setStock(variantDto.getStock());
+        variant.setSku(variantDto.getSku());
 
         // AttributeValue'leri güncelleme
         List<AttributeValueDto> attributeValueDtoList = new ArrayList<>();
