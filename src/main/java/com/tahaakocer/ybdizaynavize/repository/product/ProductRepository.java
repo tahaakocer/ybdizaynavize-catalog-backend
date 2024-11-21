@@ -36,5 +36,17 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
             @Param("attributeValues") List<Integer> attributeValues,
             Pageable pageable);
 
+    @Query("SELECT p FROM Product p JOIN p.variants v WHERE p.category.id = :categoryId ORDER BY v.discountedPrice ASC")
+    Page<Product> findAllByCategoryIdOrderByVariantDiscountedPriceAsc(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.variants v WHERE p.category.id = :categoryId ORDER BY v.discountedPrice DESC")
+    Page<Product> findAllByCategoryIdOrderByVariantDiscountedPriceDesc(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.variants v WHERE p.brand.id = :brandId ORDER BY v.discountedPrice ASC")
+    Page<Product> findAllByBrandIdOrderByVariantDiscountedPriceAsc(@Param("brandId") Long brandId, Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.variants v WHERE p.brand.id = :brandId ORDER BY v.discountedPrice DESC")
+    Page<Product> findAllByBrandIdOrderByVariantDiscountedPriceDesc(@Param("brandId") Long brandId, Pageable pageable);
+
 
 }

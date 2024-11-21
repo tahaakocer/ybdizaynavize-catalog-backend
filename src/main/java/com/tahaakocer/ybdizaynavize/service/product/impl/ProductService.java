@@ -95,26 +95,47 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductDto> getAllByCategoryId(Long categoryId, int page, int size, String sortBy, String sortDirection) {
         CategoryDto category = this.categoryService.getById(categoryId);
-        if(category != null){
-            Pageable pageable = createPageable(page,size,sortBy,sortDirection);
-            Page<Product> products = this.productRepository.findAllByCategoryId(categoryId, pageable);
+        if (category != null) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Product> products;
+
+            if ("discountedPrice".equalsIgnoreCase(sortBy)) {
+                products = sortDirection.equalsIgnoreCase("asc")
+                        ? productRepository.findAllByCategoryIdOrderByVariantDiscountedPriceAsc(categoryId, pageable)
+                        : productRepository.findAllByCategoryIdOrderByVariantDiscountedPriceDesc(categoryId, pageable);
+            } else {
+                Pageable customPageable = createPageable(page, size, sortBy, sortDirection);
+                products = productRepository.findAllByCategoryId(categoryId, customPageable);
+            }
+
             log.info("Products found: {}", products);
             return products.map(this.productMapper::entityToDto);
         }
-       return null;
+        return null;
     }
 
     @Override
     public Page<ProductDto> getAllByBrandId(Long brandId, int page, int size, String sortBy, String sortDirection) {
         BrandDto brand = this.brandService.getById(brandId);
-        if(brand != null){
-            Pageable pageable = createPageable(page,size,sortBy,sortDirection);
-            Page<Product> products = this.productRepository.findAllByBrandId(brandId, pageable);
+        if (brand != null) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Product> products;
+
+            if ("discountedPrice".equalsIgnoreCase(sortBy)) {
+                products = sortDirection.equalsIgnoreCase("asc")
+                        ? productRepository.findAllByBrandIdOrderByVariantDiscountedPriceAsc(brandId, pageable)
+                        : productRepository.findAllByBrandIdOrderByVariantDiscountedPriceDesc(brandId, pageable);
+            } else {
+                Pageable customPageable = createPageable(page, size, sortBy, sortDirection);
+                products = productRepository.findAllByBrandId(brandId, customPageable);
+            }
+
             log.info("Products found: {}", products);
             return products.map(this.productMapper::entityToDto);
         }
-       return null;
+        return null;
     }
+
 
     @Override
     public Page<ProductDto> getAllByCategoryIdAndBrandId(Long categoryId, Long brandId, int page, int size, String sortBy, String sortDirection) {
